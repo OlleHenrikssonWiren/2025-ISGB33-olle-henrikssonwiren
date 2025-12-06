@@ -33,6 +33,7 @@ public class Model {
             System.out.println(input);
             if(input != null && input.trim().isEmpty()) {
                 //Saknas input!
+                result = "Ingen film matchade kategorin";
                 throw new Exception("Error - Måste fylla i en kategori!");
             }
             //aggregera genom input variabel
@@ -59,7 +60,7 @@ public class Model {
             //return result;
         }
         catch(Exception e) {
-            System.out.println(e);
+            return result;
         }
         return result;
     }
