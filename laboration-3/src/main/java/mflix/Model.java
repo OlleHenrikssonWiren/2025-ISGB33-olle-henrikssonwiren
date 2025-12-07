@@ -7,6 +7,7 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.AggregateIterable;
+import java.lang.*;
 
 import javax.print.Doc;
 
@@ -24,7 +25,6 @@ public class Model {
             //Document doc = collection.find(eq("title", "Back to the Future")).first();
     }
     String uri = "mongodb://localhost:27017/";
-
     //Filtrera och sök
     public String fetch(String input) {
         String result = "";
