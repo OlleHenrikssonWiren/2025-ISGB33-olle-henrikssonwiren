@@ -18,6 +18,7 @@ public class Model {
     private MongoClient mongoClient;
     private MongoDatabase database;
     private MongoCollection<Document> collection;
+    //Initera mongodb
     public void initMongo() {
         mongoClient = MongoClients.create(uri);
         database = mongoClient.getDatabase("sample_mflix");
@@ -27,6 +28,7 @@ public class Model {
     }
     String uri = "mongodb://localhost:27017/";
 
+    //Filtrera och sök
     public String fetch(String input) {
         String result = "";
         try {
@@ -34,7 +36,7 @@ public class Model {
             if(input != null && input.trim().isEmpty()) {
                 //Saknas input!
                 result = "Ingen film matchade kategorin";
-                throw new Exception("Error - Måste fylla i en kategori!");
+                throw new Exception("Error - Rutan får inte vara tom!");
             }
             //aggregera genom input variabel
             AggregateIterable<Document> output = collection.aggregate(Arrays.asList(new Document("$match",
@@ -47,21 +49,24 @@ public class Model {
                             new Document("title", -1L)),
                     new Document("$limit", 10L))
             );
-            for(Document doc : output) {
+            if (output.first() == null) { // Om första ojektet är tomt!
+                System.out.println("Tom Rad");
+                result = "Ingen film matchade kategorin"; // uppdatera variable för return
+                throw new Exception(" ERROR - Ingen film matchade kategorin");
+            }
+            for(Document doc : output) { // Loopa igenom alla dokument
                 String title = doc.getString("title");
                 String year = String.valueOf(doc.getInteger("year"));
-                result += title + ", " + year + "\n";
-                System.out.println(doc.toJson());
-
+                result += title + ", " + year + "\n"; // Lägg ihopp dem och returna i slutet om allt gick bra
             }
 
 
 
             //return result;
         }
-        catch(Exception e) {
+        catch(Exception e) { // om fel hittades kasta stringen
             return result;
         }
-        return result;
+        return result; // annars gå vidare
     }
 }

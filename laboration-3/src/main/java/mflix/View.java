@@ -37,10 +37,12 @@ public class View extends JFrame {
 
         this.setVisible(true);
     }
-    public void showResults(ActionListener listener) {
 
+    // Eventlistener fetch knappen
+    public void showResults(ActionListener listener) {
         fetchButton.addActionListener(listener);
     }
+    //Getters och setters
     public String getInput() {
         return inputText.getText();
     }
