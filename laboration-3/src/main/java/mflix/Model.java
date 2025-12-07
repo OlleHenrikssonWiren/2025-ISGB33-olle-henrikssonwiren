@@ -1,10 +1,7 @@
 package mflix;
 
-import static com.mongodb.client.model.Filters.eq;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -35,7 +32,7 @@ public class Model {
             System.out.println(input);
             if(input != null && input.trim().isEmpty()) {
                 //Saknas input!
-                result = "Ingen film matchade kategorin";
+                result = "Rutan får inte vara tom";
                 throw new Exception("Error - Rutan får inte vara tom!");
             }
             //aggregera genom input variabel
