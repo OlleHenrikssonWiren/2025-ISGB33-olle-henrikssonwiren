@@ -1,10 +1,13 @@
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.in;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.Properties;
 
+import com.mongodb.client.model.Collation;
+import com.mongodb.client.model.CollationStrength;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +54,7 @@ public class Stub {
 
         MongoDatabase database = mongoClient.getDatabase(dbName);
 
-        myCollection = database.getCollection("restaurants");
+        myCollection = database.getCollection("movies");
 
         logger.info("Connected to MongoDB, using database '{}'", dbName);
     }
@@ -59,25 +62,32 @@ public class Stub {
     private static void startServer() {
         Javalin app = Javalin.create().start(4567);
 
-        app.get("/foo/{name}", Stub::getFooByName);
+        app.get("/title/{name}", Stub::getByTitle);
        
     }
 
-    private static void getFooByName(Context ctx) {
-        String inputName = ctx.pathParam("name");
-        String name = capitalizeFully(inputName.toLowerCase(Locale.ROOT));
-
-        Document doc = myCollection.find(eq("name", name)).first();
+    private static void getByTitle(Context ctx) {
+        String inputTitle = ctx.pathParam("name");
+        //String title = capitalizeFully(inputTitle.toLowerCase(Locale.ROOT));
+        System.out.println(inputTitle);
+        Collation col = Collation.builder()
+                .locale("en_US")
+                .collationStrength(CollationStrength.SECONDARY)
+                .build();
+        Document doc = myCollection.find(eq("title", inputTitle)).collation(col).first();
 
         if (doc != null) {
             doc.remove("_id");
+            doc.remove("poser");
+            doc.remove("cast");
+            doc.remove("fullplot");
             ctx.status(200);
             ctx.contentType("application/json");
             ctx.result(doc.toJson());
         } else {
             ctx.status(404);
             ctx.contentType("application/json");
-            ctx.result(jsonError("Foo not found.").toString());
+            ctx.result(jsonError("movie not found.").toString());
         }
     }
 
