@@ -77,6 +77,7 @@ public class Stub {
         app.get("/cast/{title}", Stub::getCast);
         app.get("/genre/{genre}", Stub::getByGenre);
         app.get("/actor/{actor}", Stub::getByActor);
+        app.post("/title", Stub::postByTitle);
     }
 
     private static void getByTitle(Context ctx) {
@@ -204,6 +205,22 @@ public class Stub {
         }
     }
 
+    private static void postByTitle(Context ctx) {
+        try {
+            String reqBody = ctx.body(); // Post body
+            if (reqBody.isEmpty()) throw new Exception("Body is empty");
+            Document newDoc = Document.parse(reqBody);
+            myCollection.insertOne(newDoc);
+            ctx.status(202).contentType("application/json").result(jsonMessage("Movie posted successfully!").toString());
+        }
+        catch (Exception e) {
+            ctx.status(500);
+            ctx.contentType("application/json")
+                    .result(jsonError("failed to post movie.").toString());
+
+        }
+    }
+
     // Metod för att skapa collation för att ignorera caps på mongodb med input.
     private static Collation ignoreCapsCollation() {
         return Collation.builder()
@@ -231,7 +248,11 @@ public class Stub {
         return result.toString().trim();
     }
 
- 
+    private static JsonObject jsonMessage(String msg) {
+        JsonObject obj = new JsonObject();
+        obj.addProperty("message", msg);
+        return obj;
+    }
 
     private static JsonObject jsonError(String error) {
         JsonObject obj = new JsonObject();
